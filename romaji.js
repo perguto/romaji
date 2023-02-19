@@ -58,7 +58,10 @@ const kata2hiraOffset = hiraStart - kataStart;
 function kata2hiraChar(c) {
     return shiftChar(c, kata2hiraOffset, kataRange);
 }
+// wagyou before agyou because latter overwrites former
 const kunreiTSV = `
+わ ワ wa	ゐ ヰ i	(u)	ゑ ヱ e	を ヲ o	
+あ ア a	い イ i	う ウ u	え エ e	お オ o
 か カ ka	き キ ki	く ク ku	け ケ ke	こ コ ko	きゃ キャ kya	きゅ キュ kyu	きょ キョ kyo
 さ サ sa	し シ si	す ス su	せ セ se	そ ソ so	しゃ シャ sya	しゅ シュ syu	しょ ショ syo
 た タ ta	ち チ ti	つ ツ tu	て テ te	と ト to	ちゃ チャ tya	ちゅ チュ tyu	ちょ チョ tyo
@@ -67,7 +70,6 @@ const kunreiTSV = `
 ま マ ma	み ミ mi	む ム mu	め メ me	も モ mo	みゃ ミャ mya	みゅ ミュ myu	みょ ミョ myo
 や ヤ ya	(i)	ゆ ユ yu	(e)	よ ヨ yo	
 ら ラ ra	り リ ri	る ル ru	れ レ re	ろ ロ ro	りゃ リャ rya	りゅ リュ ryu	りょ リョ ryo
-わ ワ wa	ゐ ヰ i	(u)	ゑ ヱ e	を ヲ o	
 ん ン n	
 が ガ ga	ぎ ギ gi	ぐ グ gu	げ ゲ ge	ご ゴ go	ぎゃ ギャ gya	ぎゅ ギュ gyu	ぎょ ギョ gyo
 ざ ザ za	じ ジ zi	ず ズ zu	ぜ ゼ ze	ぞ ゾ zo	じゃ ジャ zya	じゅ ジュ zyu	じょ ジョ zyo
