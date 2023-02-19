@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Japanese Romaji Converter</title>
+	</head>
+	<body>
+		<h1 id="title">Japanese Romaji Converter</h1>
+		<p>Convert between Hiragana, Katakana and various romanizations, such as Hepburn or Kunrei-shiki</p>
+		<input class="input" type="text" id="any">
+		<input class="input" type="text" id="hira">
+		<input class="input" type="text" id="kata">
+		<input class="input" type="text" id="kunrei">
+
+		<script src="./romaji.js"></script>
+		<script>
+			const inputArray = [...document.querySelectorAll(".input")]
+			const input = {}
+			for(const i of inputArray){
+				input[
+								i
+								//.id.split('_').slice(-1)
+							]=i
+			}
+
+			function processInput(inputEvent){
+							const inputElement = inputEvent.target
+							const inputText = inputElement.value
+							const from = inputElement.id
+							for(const i of inputArray){
+											if(i!=inputElement){
+															const to = i.id
+															i.value = convert(inputText,from,to)
+														}
+										}
+						}
+			
+			for(const i of inputArray){
+				i.addEventListener("input",processInput)
+						}
+
+
+		</script>
+	</body>
+</html>
