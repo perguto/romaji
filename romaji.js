@@ -40,6 +40,7 @@ function remap(s, dict) {
     return t;
 }
 const styles = ["any", "hira", "kata", "kunrei"];
+const properStyles = styles.slice(1);
 const hiraStart = 0x3040;
 const hiraLength = 0x60;
 const hiraEnd = hiraStart + hiraLength;
@@ -79,7 +80,21 @@ const kunreiTSV = `
 `.slice(0, -1);
 const kunreiList = kunreiTSV.split(/\t|\n/);
 const kunreiTable = kunreiList.map(row => row.split(/ /)).filter(row => row.length === 3);
-// console.log(...kunreiTable)
+const conversionDict = {};
+for (const from of properStyles) {
+    conversionDict[from] = {};
+    for (const to of properStyles) {
+        conversionDict[from][to] = {};
+    }
+}
+for (const [hira, kata, kunrei] of kunreiTable) {
+    const entry = { hira, kata, kunrei };
+    for (const from of properStyles) {
+        for (const to of properStyles) {
+            conversionDict[from][to][entry[from]] = entry[to];
+        }
+    }
+}
 const hira2kunreiDict = {};
 const kata2kunreiDict = {};
 const kunrei2hiraDict = {};
@@ -117,20 +132,32 @@ function hira2kata(s) {
 function kata2hira(s) {
     return replaceChars(s, kata2hiraChar);
 }
-const conversions = {
-    "hira": {
-        "kata": hira2kata,
-        "kunrei": hira2kunrei,
-    },
-    "kata": {
-        "hira": kata2hira,
-        "kunrei": kata2kunrei,
-    },
-    "kunrei": {
-        "hira": kunrei2hira,
-        "kata": kunrei2kata,
+// const conversions : ConversionTable = {
+// 	"hira" : {
+// 		"kata" : hira2kata,
+// 		"kunrei" : hira2kunrei,
+// 	},
+// 	"kata" : {
+// 		"hira" : kata2hira,
+// 		"kunrei" : kata2kunrei,
+// 	},
+// 	"kunrei" : {
+// 		"hira" : kunrei2hira,
+// 		"kata" : kunrei2kata,
+// 	}
+// }
+const conversions = {};
+for (const from of properStyles) {
+    conversions[from] = {};
+}
+for (const from of properStyles) {
+    for (const to of properStyles) {
+        conversions[from][to] = s => remap(s, conversionDict[from][to]);
     }
-};
+}
+function convertChar(c, from, to) {
+    return c;
+}
 function convert(s, from, to) {
     if (to === "any") {
         to = "hira";
@@ -154,17 +181,19 @@ function convert(s, from, to) {
     // 	case "hira": 
     // 		switch (to) {
 }
+/////////////
+//test area
 const test_input = //prompt()??
  'わかりますか?';
 const test_katakana = 
 // hira2kata(input)
 convert(test_input, "hira", "kata");
-const test_hiragana = kata2hira(test_katakana);
-const test_kunrei = hira2kunrei(test_input);
-const test_kunrei2hira = kunrei2hira(test_kunrei);
-const test_kunrei2kata = kunrei2kata(test_kunrei);
+// const test_hiragana = kata2hira(test_katakana)
+// const test_kunrei = hira2kunrei(test_input)
+// const test_kunrei2hira = kunrei2hira(test_kunrei)
+// const test_kunrei2kata = kunrei2kata(test_kunrei)
 console.log(test_katakana);
-console.log(test_hiragana);
-console.log(test_kunrei);
-console.log(test_kunrei2hira);
-console.log(test_kunrei2kata);
+// console.log(test_hiragana)
+// console.log(test_kunrei)
+// console.log(test_kunrei2hira)
+// console.log(test_kunrei2kata)

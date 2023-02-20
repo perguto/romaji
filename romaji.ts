@@ -59,6 +59,7 @@ function remap(s : string, dict : Dict){
 
 type Style = "any" |  "hira" | "kata" | "kunrei" // | "hepburn"
 const styles :Style[] = ["any", "hira", "kata", "kunrei"]
+const properStyles = styles.slice(1)
 
 const hiraStart = 0x3040
 const hiraLength = 0x60
@@ -113,6 +114,29 @@ const kunreiTable = kunreiList.map(row => row.split(/ /)).filter(row => row.leng
 
 // console.log(...kunreiTable)
 
+type ConversionDict = {
+	[from : string] : {
+		[to : string] : Dict
+	}
+}
+
+const conversionDict : ConversionDict = {}
+for( const from of properStyles){
+	conversionDict[from] = {}
+	for( const to of properStyles){
+		conversionDict[from][to] = {}
+	}
+}
+
+for(const [hira, kata, kunrei] of kunreiTable){
+	const entry : Dict = {hira, kata, kunrei}
+	for( const from of properStyles){
+		for( const to of properStyles){
+			conversionDict[from][to][entry[from]] = entry[to]
+		}
+	}
+}
+
 const hira2kunreiDict : Dict = { }
 const kata2kunreiDict : Dict = { }
 const kunrei2hiraDict : Dict = { }
@@ -166,21 +190,36 @@ type ConversionTable = {
 	}
 }
 
-const conversions : ConversionTable = {
-	"hira" : {
-		"kata" : hira2kata,
-		"kunrei" : hira2kunrei,
-	},
+// const conversions : ConversionTable = {
+// 	"hira" : {
+// 		"kata" : hira2kata,
+// 		"kunrei" : hira2kunrei,
+// 	},
+// 	"kata" : {
+// 		"hira" : kata2hira,
+// 		"kunrei" : kata2kunrei,
+// 	},
+// 	"kunrei" : {
+// 		"hira" : kunrei2hira,
+// 		"kata" : kunrei2kata,
+// 	}
+// }
 
-	"kata" : {
-		"hira" : kata2hira,
-		"kunrei" : kata2kunrei,
-	},
-	
-	"kunrei" : {
-		"hira" : kunrei2hira,
-		"kata" : kunrei2kata,
+const conversions : ConversionTable = {
+}
+
+for( const from of properStyles){
+	conversions[from] = {}
+}
+
+for( const from of properStyles){
+	for( const to of properStyles){
+		conversions[from][to] = s => remap(s, conversionDict[from][to])
 	}
+}
+
+function convertChar(c : char, from : Style, to : Style) : char{
+	return c
 
 }
 
@@ -200,7 +239,7 @@ function convert(s : string, from : Style, to : Style) : string{
 	if(from===to){
 		return s
 	}
-	
+
 
 	const conversionFunction = conversions[from][to]
 	return conversionFunction(s)
@@ -211,20 +250,22 @@ function convert(s : string, from : Style, to : Style) : string{
 	// 		switch (to) {
 }
 
+/////////////
+//test area
 const test_input = //prompt()??
 	'わかりますか?'
 const test_katakana = 
 	// hira2kata(input)
 	convert(test_input, "hira", "kata")
-const test_hiragana = kata2hira(test_katakana)
-const test_kunrei = hira2kunrei(test_input)
-const test_kunrei2hira = kunrei2hira(test_kunrei)
-const test_kunrei2kata = kunrei2kata(test_kunrei)
+// const test_hiragana = kata2hira(test_katakana)
+// const test_kunrei = hira2kunrei(test_input)
+// const test_kunrei2hira = kunrei2hira(test_kunrei)
+// const test_kunrei2kata = kunrei2kata(test_kunrei)
 
 
 
 console.log(test_katakana)
-console.log(test_hiragana)
-console.log(test_kunrei)
-console.log(test_kunrei2hira)
-console.log(test_kunrei2kata)
+// console.log(test_hiragana)
+// console.log(test_kunrei)
+// console.log(test_kunrei2hira)
+// console.log(test_kunrei2kata)
