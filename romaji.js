@@ -1,6 +1,6 @@
 function reverseDict(dict) {
-    let p = {};
-    for (let [k, v] of Object.entries(dict)) {
+    const p = {};
+    for (const [k, v] of Object.entries(dict)) {
         p[v] = k;
     }
     return p;
@@ -155,9 +155,10 @@ for (const from of properStyles) {
         conversions[from][to] = s => remap(s, conversionDict[from][to]);
     }
 }
-function convertChar(c, from, to) {
-    return c;
-}
+// not needed
+// function convertChar(c : char, from : Style, to : Style) : char{
+// 	return c
+// }
 function convert(s, from, to) {
     if (to === "any") {
         to = "hira";
