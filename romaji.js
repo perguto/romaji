@@ -95,28 +95,6 @@ for (const [hira, kata, kunrei] of kunreiTable) {
         }
     }
 }
-const hira2kunreiDict = {};
-const kata2kunreiDict = {};
-const kunrei2hiraDict = {};
-const kunrei2kataDict = {};
-for (const [hira, kata, kunrei] of kunreiTable) {
-    hira2kunreiDict[hira] = kunrei;
-    kunrei2hiraDict[kunrei] = hira;
-    kata2kunreiDict[kata] = kunrei;
-    kunrei2kataDict[kunrei] = kata;
-}
-function hira2kunrei(s) {
-    return remap(s, hira2kunreiDict);
-}
-function kunrei2hira(s) {
-    return remap(s, kunrei2hiraDict);
-}
-function kata2kunrei(s) {
-    return remap(s, kata2kunreiDict);
-}
-function kunrei2kata(s) {
-    return remap(s, kunrei2kataDict);
-}
 ///////////////
 // string maninpulation
 function replaceChars(s, replaceChar) {
@@ -126,26 +104,6 @@ function replaceChars(s, replaceChar) {
     }
     return t;
 }
-function hira2kata(s) {
-    return replaceChars(s, hira2kataChar);
-}
-function kata2hira(s) {
-    return replaceChars(s, kata2hiraChar);
-}
-// const conversions : ConversionTable = {
-// 	"hira" : {
-// 		"kata" : hira2kata,
-// 		"kunrei" : hira2kunrei,
-// 	},
-// 	"kata" : {
-// 		"hira" : kata2hira,
-// 		"kunrei" : kata2kunrei,
-// 	},
-// 	"kunrei" : {
-// 		"hira" : kunrei2hira,
-// 		"kata" : kunrei2kata,
-// 	}
-// }
 const conversions = {};
 for (const from of properStyles) {
     conversions[from] = {};
@@ -155,10 +113,6 @@ for (const from of properStyles) {
         conversions[from][to] = s => remap(s, conversionDict[from][to]);
     }
 }
-// not needed
-// function convertChar(c : char, from : Style, to : Style) : char{
-// 	return c
-// }
 function convert(s, from, to) {
     if (to === "any") {
         to = "hira";
@@ -176,11 +130,6 @@ function convert(s, from, to) {
     }
     const conversionFunction = conversions[from][to];
     return conversionFunction(s);
-    // console.log(from+"2"+to)
-    // return Function("s","return "+from+"2"+to+"(s)")(s)
-    // switch (from){
-    // 	case "hira": 
-    // 		switch (to) {
 }
 /////////////
 //test area

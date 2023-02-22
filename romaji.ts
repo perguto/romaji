@@ -38,10 +38,10 @@ function shiftChar(c:char,offset:number,range:numberRange){
 }
 
 function disjunctiveMatcher(a:string[],flags= "g") {
-  // Escape special characters in each string and join them with the `|` operator
-  const escaped = a.map((str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
-  // Create a RegExp object with the joined string as the pattern and the global //and ignore case flags
-  return new RegExp(`(${escaped})`, flags);
+	// Escape special characters in each string and join them with the `|` operator
+	const escaped = a.map((str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+	// Create a RegExp object with the joined string as the pattern and the global //and ignore case flags
+	return new RegExp(`(${escaped})`, flags);
 }
 
 function remap(s : string, dict : Dict){
@@ -61,11 +61,18 @@ type Style = "any" |  "hira" | "kata" | "kunrei" // | "hepburn"
 const styles :Style[] = ["any", "hira", "kata", "kunrei"]
 const properStyles = styles.slice(1)
 
+// the whole hira code page
 const hiraStart = 0x3040
 const hiraLength = 0x60
 const hiraEnd = hiraStart + hiraLength
 const hiraInterval : Interval = [hiraStart, hiraEnd]
 const hiraRange = [hiraInterval]
+
+// the part which matches 1 to 1 the kata page
+const hiraParallelStart = hiraStart + 1
+const hiraParallelEnd = hiraEnd - 9
+const hiraParallelInterval : Interval = [hiraParallelStart,hiraParallelEnd]
+const hiraParallelRange = [hiraParallelInterval]
 
 const kataStart = 0x30A0
 const kataLength = 0x60
@@ -73,17 +80,29 @@ const kataEnd = kataStart + kataLength
 const kataInterval : Interval = [kataStart, kataEnd]
 const kataRange = [kataInterval]
 
+const kataParallelStart = kataStart + 1
+const kataParallelEnd = kataEnd - 9
+const kataParallelInterval : Interval = [kataParallelStart,kataParallelEnd]
+const kataParallelRange = [kataParallelInterval]
+
 const hira2kataOffset = kataStart - hiraStart
 
-
-
+function hira2kataChar(c :char) {
+    return shiftChar(c, hira2kataOffset, hiraParallelRange);
+}
 const kata2hiraOffset = hiraStart - kataStart
 
 function kata2hiraChar(c : char){
-	return shiftChar(c,kata2hiraOffset, kataRange)
+	return shiftChar(c,kata2hiraOffset, kataParallelRange)
 }
 
-
+const punctuationTable = `
+. 
+? 
+[ 
+] 
+" 
+`.slice(0,-1)
 
 // wagyou before agyou because latter overwrites former
 const kunreiTSV = `
@@ -103,6 +122,8 @@ const kunreiTSV = `
 だ ダ da	ぢ ヂ zi	づ ヅ zu	で デ de	ど ド do	ぢゃ ヂャ zya	ぢゅ ヂュ zyu	ぢょ ヂョ zyo
 ば バ ba	び ビ bi	ぶ ブ bu	べ ベ be	ぼ ボ bo	びゃ ビャ bya	びゅ ビュ byu	びょ ビョ byo
 ぱ パ pa	ぴ ピ pi	ぷ プ pu	ぺ ペ pe	ぽ ポ po	ぴゃ ピャ pya	ぴゅ ピュ pyu	ぴょ ピョ pyo
+
+
 `.slice(0,-1)
 
 const kunreiList = kunreiTSV.split(/\t|\n/)
@@ -134,20 +155,6 @@ for(const [hira, kata, kunrei] of kunreiTable){
 	}
 }
 
-const hira2kunreiDict : Dict = { }
-const kata2kunreiDict : Dict = { }
-const kunrei2hiraDict : Dict = { }
-const kunrei2kataDict : Dict = { }
-
-for(const [hira, kata, kunrei] of kunreiTable){
-	hira2kunreiDict[hira]=kunrei
-	kunrei2hiraDict[kunrei]=hira
-	kata2kunreiDict[kata]=kunrei
-	kunrei2kataDict[kunrei]=kata
-}
-
-
-
 ///////////////
 // string maninpulation
 
@@ -159,28 +166,11 @@ function replaceChars(s : string, replaceChar : (c:char) => char){
 	return t
 }
 
-
-
 type ConversionTable = {
 	[ from : string ] : {
 		[ to : string ] : (s: string) => string
 	}
 }
-
-// const conversions : ConversionTable = {
-// 	"hira" : {
-// 		"kata" : hira2kata,
-// 		"kunrei" : hira2kunrei,
-// 	},
-// 	"kata" : {
-// 		"hira" : kata2hira,
-// 		"kunrei" : kata2kunrei,
-// 	},
-// 	"kunrei" : {
-// 		"hira" : kunrei2hira,
-// 		"kata" : kunrei2kata,
-// 	}
-// }
 
 const conversions : ConversionTable = {
 }
@@ -194,11 +184,6 @@ for( const from of properStyles){
 		conversions[from][to] = s => remap(s, conversionDict[from][to])
 	}
 }
-
-// not needed
-// function convertChar(c : char, from : Style, to : Style) : char{
-// 	return c
-// }
 
 function convert(s : string, from : Style, to : Style) : string{
 	if(to === "any"){
@@ -216,15 +201,8 @@ function convert(s : string, from : Style, to : Style) : string{
 	if(from===to){
 		return s
 	}
-
-
 	const conversionFunction = conversions[from][to]
 	return conversionFunction(s)
-	// console.log(from+"2"+to)
-	// return Function("s","return "+from+"2"+to+"(s)")(s)
-	// switch (from){
-	// 	case "hira": 
-	// 		switch (to) {
 }
 
 /////////////
