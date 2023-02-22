@@ -3,8 +3,8 @@ type Dict = {
 }
 
 function reverseDict(dict:Dict){
-	let p:Dict = {}
-	for (let [k,v] of Object.entries(dict)){
+	const p:Dict = {}
+	for (const [k,v] of Object.entries(dict)){
 		p[v]=k
 	}
 	return p
@@ -218,10 +218,10 @@ for( const from of properStyles){
 	}
 }
 
-function convertChar(c : char, from : Style, to : Style) : char{
-	return c
-
-}
+// not needed
+// function convertChar(c : char, from : Style, to : Style) : char{
+// 	return c
+// }
 
 function convert(s : string, from : Style, to : Style) : string{
 	if(to === "any"){
