@@ -75,9 +75,6 @@ const kataRange = [kataInterval]
 
 const hira2kataOffset = kataStart - hiraStart
 
-function hira2kataChar(c : char){
-	return shiftChar(c,hira2kataOffset, hiraRange)
-}
 
 
 const kata2hiraOffset = hiraStart - kataStart
@@ -149,21 +146,7 @@ for(const [hira, kata, kunrei] of kunreiTable){
 	kunrei2kataDict[kunrei]=kata
 }
 
-function hira2kunrei(s : string){
-	return remap(s,hira2kunreiDict)
-}
 
-function kunrei2hira(s : string){
-	return remap(s,kunrei2hiraDict)
-}
-
-function kata2kunrei(s : string){
-	return remap(s,kata2kunreiDict)
-}
-
-function kunrei2kata(s : string){
-	return remap(s,kunrei2kataDict)
-}
 
 ///////////////
 // string maninpulation
@@ -176,13 +159,7 @@ function replaceChars(s : string, replaceChar : (c:char) => char){
 	return t
 }
 
-function hira2kata(s : string){
-	return replaceChars(s, hira2kataChar)
-}
 
-function kata2hira(s : string){
-	return replaceChars(s, kata2hiraChar)
-}
 
 type ConversionTable = {
 	[ from : string ] : {
